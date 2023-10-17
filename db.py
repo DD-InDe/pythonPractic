@@ -37,6 +37,10 @@ class Log:
         self.log_in = start
         self.log_out = end
 
+    def return_class(self):
+        log = Log(id=self.id, user=self.user.id, start=self.log_in, end=self.log_out)
+        return log
+
 
 users = []
 services = []
@@ -66,12 +70,28 @@ def upload_data(data=database):
         log = Log(id=item_log['id'], user=find_user, start=item_log['time_log_in'], end=item_log['time_log_out'])
         logs.append(log)
 
+def users_get_dict():
+    users_dict = []
+    for user in users:
+        users_dict.append(user.__dict__)
+    return users_dict
 
-def class_to_dict(obj):
+def service_get_dict():
+    services_dict = []
+    for service in services:
+        services_dict.append(service.__dict__)
+    return services_dict
+
+def log_get_dict():
+    logs_dict = []
+    for log in logs:
+        logs_dict.append(log.return_class().__dict__)
+    return logs_dict
+
+def get_dict(obj):
     return obj.__dict__
 
-
 def update_data():
-    data = {'user': dict.fromkeys(users), 'service': dict.fromkeys(services), 'log': dict.fromkeys(logs)}
+    data = {'user': users_get_dict(), 'service': service_get_dict(), 'log': log_get_dict()}
     with open("data_file.json", "w", encoding="utf-8") as write_file:
-        json.dump(data, write_file, ensure_ascii=False, indent=4, default=class_to_dict, )
+        json.dump(data, write_file, ensure_ascii=False, indent=4, default=get_dict)

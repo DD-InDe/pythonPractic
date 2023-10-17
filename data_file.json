@@ -1,3 +1,116 @@
 {
-    "user": {
-        
+  "user": [
+    {
+      "id": 1,
+      "login": "kirill",
+      "password": "qwerty",
+      "first_name": "Кирилл",
+      "last_name": "Шпротов",
+      "middle_name": "Михайлович",
+      "gender": "male",
+      "role": "admin",
+      "is_enabled": true
+    },
+    {
+      "id": 2,
+      "login": "oleg",
+      "password": "qwerty",
+      "first_name": "Олег",
+      "last_name": "Орлов",
+      "middle_name": "Владимирович",
+      "gender": "male",
+      "role": "user",
+      "is_enabled": true
+    },
+    {
+      "id": 3,
+      "login": "andrey",
+      "password": "qwerty",
+      "first_name": "Андрей",
+      "last_name": "Ромашкин",
+      "middle_name": "Сергеевич",
+      "gender": "male",
+      "role": "user",
+      "is_enabled": false
+    },
+    {
+      "id": 4,
+      "login": "maria",
+      "password": "qwerty",
+      "first_name": "Мария",
+      "last_name": "Золотухина",
+      "middle_name": "Денисовна",
+      "gender": "female",
+      "role": "user",
+      "is_enabled": true
+    },
+    {
+      "id": 5,
+      "login": "cristina",
+      "password": "qwerty",
+      "first_name": "Кристина",
+      "last_name": "Михалкова",
+      "middle_name": "Максимовна",
+      "gender": "female",
+      "role": "user",
+      "is_enabled": false
+    },
+    {
+      "id": 6,
+      "login": "eugene",
+      "password": "qwerty",
+      "first_name": "Евгений",
+      "last_name": "Орехов",
+      "middle_name": "Павлович",
+      "gender": "male",
+      "role": "user",
+      "is_enabled": true
+    },
+    {
+      "id": 7,
+      "login": "stas",
+      "password": "qwerty",
+      "first_name": "Стас",
+      "last_name": "Стеклов",
+      "middle_name": "Михайлович",
+      "gender": "male",
+      "role": "user",
+      "is_enabled": true
+    }
+  ],
+  "service": [
+    {
+      "id": 1,
+      "name": "Устранение протечки",
+      "cost": 1300
+    },
+    {
+      "id": 2,
+      "name": "Прокладка труб",
+      "cost": 500
+    },
+    {
+      "id": 3,
+      "name": "Устранение засора",
+      "cost": 500
+    },
+    {
+      "id": 4,
+      "name": "Установка душевой кабины",
+      "cost": 3500
+    },
+    {
+      "id": 5,
+      "name": "Установка смесителя",
+      "cost": 1000
+    }
+  ],
+  "log": [
+    {
+      "id": 1,
+      "user": 1,
+      "log_in": "2023-10-16T08:00:00",
+      "log_out": "2023-10-16T08:20:00"
+    }
+  ]
+}
