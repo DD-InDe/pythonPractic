@@ -1,5 +1,6 @@
 import json
 import sys
+import datetime
 
 
 def read_info(file_name):
@@ -31,27 +32,31 @@ class Service:
 
 
 class Log:
-    def __init__(self, id, user, start, end):
+    def __init__(self, id, start, end):
         self.id = id
-        self.user = user
-        self.log_in = start
-        self.log_out = end
+        self.time_log_in = start
+        self.time_log_out = end
 
-    def return_class(self):
-        log = Log(id=self.id, user=self.user.id, start=self.log_in, end=self.log_out)
-        return log
+    def get_info(self):
+        return f'{self.id}|,{self.time_log_in}|,{self.time_log_in}'
+
+    def get_item(self, data):
+        if f'{self.time_log_in:%m/%d}' == data:
+            return self
 
 
 users = []
 services = []
 logs = []
 
-listtest = dict
-
 database = read_info("db.json")
 
 
-def upload_data(data=database):
+def upload_data(data):
+    users.clear()
+    services.clear()
+    logs.clear()
+
     for item_user in data["user"]:
         user = User(id=item_user['id'], login=item_user['login'], password=item_user['password'],
                     first_name=item_user['first_name'],
@@ -62,13 +67,11 @@ def upload_data(data=database):
         service = Service(id=item_service['id'], name=item_service['name'], cost=item_service['cost'])
         services.append(service)
 
-    for item_log in data["log"]:
-        for user in users:
-            if user.id == item_log['user_id']:
-                find_user = user
-                continue
-        log = Log(id=item_log['id'], user=find_user, start=item_log['time_log_in'], end=item_log['time_log_out'])
-        logs.append(log)
+    # logs_file = open('logs.txt', 'r')
+    # for line in logs_file:
+    #     log = Log(line.split('|')[0], line.split('|')[1], line.split('|')[2])
+    #     logs.append(log)
+
 
 def users_get_dict():
     users_dict = []
@@ -76,22 +79,30 @@ def users_get_dict():
         users_dict.append(user.__dict__)
     return users_dict
 
+
 def service_get_dict():
     services_dict = []
     for service in services:
         services_dict.append(service.__dict__)
     return services_dict
 
-def log_get_dict():
-    logs_dict = []
-    for log in logs:
-        logs_dict.append(log.return_class().__dict__)
-    return logs_dict
 
 def get_dict(obj):
     return obj.__dict__
 
+
 def update_data():
-    data = {'user': users_get_dict(), 'service': service_get_dict(), 'log': log_get_dict()}
+    data = {'user': users_get_dict(), 'service': service_get_dict()}
     with open("data_file.json", "w", encoding="utf-8") as write_file:
-        json.dump(data, write_file, ensure_ascii=False, indent=4, default=get_dict)
+        json.dump(data, write_file, ensure_ascii=False, default=get_dict)
+
+    # new_file = open('logs1.txt', 'w')
+    # for log in logs:
+    #     new_file.write(f'{log.get_info()}\n')
+    # new_file.close()
+
+
+'''
+Новая БД создается в новом файле!
+Исправить на исходник
+'''
