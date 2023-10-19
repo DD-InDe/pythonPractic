@@ -16,9 +16,9 @@ def authentication():
             exit(1)
 
     print("Логин:", end=' ')
-    login = input()
+    login = input().replace(" ","")
     print("Пароль:", end=' ')
-    password = input()
+    password = input().replace(" ","")
     for user in db.users:
         if user.login == login and user.password == password:
             if user.is_enabled:
