@@ -38,16 +38,39 @@ class Log:
         self.time_log_out = end
 
     def get_info(self):
-        return f'{self.id}|,{self.time_log_in}|,{self.time_log_in}'
+        time_start = datetime.datetime.strptime(self.time_log_in, '%d/%m/%Y %H:%M:%S')
+        time_end = datetime.datetime.strptime(self.time_log_out, '%d/%m/%Y %H:%M:%S')
+        time_start = time_start.strftime('%d/%m/%Y %H:%M:%S')
+        time_end = time_end.strftime('%d/%m/%Y %H:%M:%S')
+        return f'{self.id}|{time_start}|{time_end}'
 
-    def get_item(self, data):
-        if f'{self.time_log_in:%m/%d}' == data:
-            return self
+    def get_data(self):
+        temp = self.time_log_in.split(' ')
+        temp = temp[0].split('/')
+        return f'{temp[1]}/{temp[0]}'
 
+    def get_session_time(self):
+        time_start = datetime.datetime.strptime(self.time_log_in, '%d/%m/%Y %H:%M:%S')
+        time_end = datetime.datetime.strptime(self.time_log_out, '%d/%m/%Y %H:%M:%S')
+        return time_end - time_start
+
+class Check:
+    def __init__(self, id, user, services):
+        self.id = id
+        self.user = user
+        self.services = services
+
+    def get_info(self):
+        all_services = ''
+        for service in self.services:
+            all_services = f'{all_services},{service.id}'
+        all_services = all_services.replace(',','',1)
+        return f'{self.id}|{self.user.id}|{all_services}'
 
 users = []
 services = []
 logs = []
+checks = []
 
 database = read_info("db.json")
 
@@ -67,10 +90,10 @@ def upload_data(data):
         service = Service(id=item_service['id'], name=item_service['name'], cost=item_service['cost'])
         services.append(service)
 
-    # logs_file = open('logs.txt', 'r')
-    # for line in logs_file:
-    #     log = Log(line.split('|')[0], line.split('|')[1], line.split('|')[2])
-    #     logs.append(log)
+    logs_file = open('logs.txt', 'r')
+    for line in logs_file:
+        log = Log(line.split('|')[0], line.split('|')[1], line.split('|')[2].replace('\n', ''))
+        logs.append(log)
 
 
 def users_get_dict():
@@ -93,16 +116,16 @@ def get_dict(obj):
 
 def update_data():
     data = {'user': users_get_dict(), 'service': service_get_dict()}
-    with open("data_file.json", "w", encoding="utf-8") as write_file:
-        json.dump(data, write_file, ensure_ascii=False, default=get_dict)
-
-    # new_file = open('logs1.txt', 'w')
-    # for log in logs:
-    #     new_file.write(f'{log.get_info()}\n')
-    # new_file.close()
-
+    with open("db.json", "w", encoding="utf-8") as write_file:
+        json.dump(data, write_file, ensure_ascii=False, indent=4, default=get_dict)
+    write_file = open("logs.txt","w")
+    for log in logs:
+        write_file.write(log.get_info() + '\n')
+    write_file.close()
 
 '''
 Новая БД создается в новом файле!
 Исправить на исходник
 '''
+
+upload_data(database)
