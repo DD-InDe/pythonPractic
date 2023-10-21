@@ -54,18 +54,23 @@ class Log:
         time_end = datetime.datetime.strptime(self.time_log_out, '%d/%m/%Y %H:%M:%S')
         return time_end - time_start
 
+
 class Check:
-    def __init__(self, id, user, services):
+    def __init__(self, id, user, address, date, check_sum, check_services):
         self.id = id
         self.user = user
-        self.services = services
+        self.address = address
+        self.date = date
+        self.services = check_services
+        self.sum = check_sum
 
     def get_info(self):
         all_services = ''
         for service in self.services:
             all_services = f'{all_services},{service.id}'
-        all_services = all_services.replace(',','',1)
-        return f'{self.id}|{self.user.id}|{all_services}'
+        all_services = all_services.replace(',', '', 1)
+        return f'{self.id}|{self.user.id}|{self.address}|{self.date}|{self.sum}|{all_services}'
+
 
 users = []
 services = []
@@ -79,21 +84,46 @@ def upload_data(data):
     users.clear()
     services.clear()
     logs.clear()
+    checks.clear()
 
+    # загрузка пользователей
     for item_user in data["user"]:
         user = User(id=item_user['id'], login=item_user['login'], password=item_user['password'],
                     first_name=item_user['first_name'],
                     last_name=item_user['last_name'], middle_name=item_user['middle_name'], gender=item_user['gender'],
                     role=item_user['role'], enabled=item_user['is_enabled'])
         users.append(user)
+    # загрузка услуг
     for item_service in data["service"]:
         service = Service(id=item_service['id'], name=item_service['name'], cost=item_service['cost'])
         services.append(service)
-
+    # загрузка логов
     logs_file = open('logs.txt', 'r')
     for line in logs_file:
         log = Log(line.split('|')[0], line.split('|')[1], line.split('|')[2].replace('\n', ''))
         logs.append(log)
+    logs_file.close()
+    # загрузка чеков
+    checks_file = open('checks.txt', 'r', encoding="utf-8")
+    for line in checks_file:
+        temp = line.split('|')
+        check_id = temp[0]
+        for user in users:
+            if user.id == int(temp[1]):
+                check_user = user
+        check_service = []
+        check_address = temp[2]
+        check_date = temp[3]
+        check_sum = temp[4]
+        list_services = temp[5].split(',')
+        for serv in list_services:
+            for service in services:
+                if service.id == int(serv):
+                    check_service.append(service)
+        check = Check(id=check_id, user=check_user, address=check_address, date=check_date, check_sum=check_sum,
+                      check_services=check_service)
+        checks.append(check)
+    checks_file.close()
 
 
 def users_get_dict():
@@ -115,17 +145,17 @@ def get_dict(obj):
 
 
 def update_data():
+    # сохранение пользователей и услуг
     data = {'user': users_get_dict(), 'service': service_get_dict()}
     with open("db.json", "w", encoding="utf-8") as write_file:
         json.dump(data, write_file, ensure_ascii=False, indent=4, default=get_dict)
-    write_file = open("logs.txt","w")
+    # сохранение логов
+    log_file = open("logs.txt", "w")
     for log in logs:
-        write_file.write(log.get_info() + '\n')
-    write_file.close()
-
-'''
-Новая БД создается в новом файле!
-Исправить на исходник
-'''
-
-upload_data(database)
+        log_file.write(log.get_info() + '\n')
+    log_file.close()
+    # сохранение чеков
+    check_file = open("checks.txt", 'w', encoding="utf-8")
+    for check in checks:
+        check_file.write(check.get_info() + '\n')
+    check_file.close()

@@ -8,7 +8,7 @@ import user_actions
 # блок авторизации
 def authentication():
     def dialog():
-        print("1 - Повторить попытку")
+        print("[1] - Повторить попытку")
         result = input()
         if result == '1':
             authentication()
@@ -16,9 +16,9 @@ def authentication():
             exit(1)
 
     print("Логин:", end=' ')
-    login = input().replace(" ","")
+    login = input().replace(" ", "")
     print("Пароль:", end=' ')
-    password = input().replace(" ","")
+    password = input().replace(" ", "")
     for user in db.users:
         if user.login == login and user.password == password:
             if user.is_enabled:
@@ -40,8 +40,16 @@ def authentication():
 
 
 if __name__ == '__main__':
-    db.upload_data(db.database)
-    print("Добро пожаловть!\nАтворизируйтесь в системе")
-    authentication()
-    create_log.user_log_out = datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-    create_log.save_session()
+    try:
+        db.upload_data(db.database)
+        print("Добро пожаловать!\nАвторизируйтесь в системе")
+        authentication()
+        raise RuntimeError
+    except Exception as exception:
+        print(exception)
+    except exit():
+        pass
+    finally:
+        if create_log.logged_user != 0:
+            create_log.user_log_out = datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+            create_log.save_session()
